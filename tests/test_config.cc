@@ -1,6 +1,7 @@
 #include "../megalo/config.h"
 #include "../megalo/log.h"
 
+#include <cmath>
 #include <sstream>
 #include <string>
 #include <unordered_map>
@@ -10,6 +11,7 @@
 #include <yaml-cpp/node/type.h>
 #include <yaml-cpp/yaml.h>
 
+#if 0
 megalo::ConfigVar<int>::ptr g_config_int_value = 
   megalo::Config::Lookup("system.port",(int)8080,"system port");
 
@@ -108,6 +110,7 @@ void test_config(){
        
 }
 
+#endif
 
 class Person{
 public:
@@ -172,7 +175,7 @@ megalo::ConfigVar<std::map<std::string, Person> >::ptr g_person_map =
 
 void test_class(){
 
-  g_person->addListener(10,[](const Person& old_value, const Person& new_value){
+  g_person->addListener([](const Person& old_value, const Person& new_value){
         MEGALO_LOG_INFO(MEGALO_LOG_ROOT()) << "old_value=" << old_value.toString()
         << " new_value=" << new_value.toString();
       });
@@ -195,9 +198,31 @@ void test_class(){
   MEGALO_LOG_INFO(MEGALO_LOG_ROOT()) << "after: " << g_person->getValue().toString() << " - " << g_person->toString();
   XX_MP(g_person_map, class.map after);
 }
+
+void test_log(){
+  static megalo::Logger:: ptr system_log = MEGALO_LOG_NAME("system");
+  MEGALO_LOG_INFO(system_log) << "hello system" << std::endl;
+  std::cout << megalo::LoggerMgr::GetInstance()->toYamlString() << std::endl; 
+  
+  YAML::Node root = YAML::LoadFile("/home/mars/Project/megalo/bin/conf/log.yml");
+  megalo::Config::LoadFromYaml(root);
+
+  std::cout << "============" << std::endl;
+  std::cout << megalo::LoggerMgr::GetInstance()->toYamlString() << std::endl;
+  std::cout << "============" << std::endl;
+  std::cout << root << std::endl;
+  std::cout << "============" << std::endl;
+
+  MEGALO_LOG_INFO(system_log) << "hello system" << std::endl;
+  system_log->setFormatter("%d - %m%n");
+  MEGALO_LOG_INFO(system_log) << "hello system" << std::endl;
+}
+
+
 int main(){
   //test_yaml();
   //test_config();
-  test_class();
+  //test_class();
+  test_log();
   return 0;
 }

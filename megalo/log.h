@@ -14,6 +14,7 @@
 
 #include "util.h"
 #include "singleton.h"
+#include "thread.h"
 
 //使用流式方式把level日志写入到logger
 #define MEGALO_LOG_LEVEL(logger,level) \
@@ -141,6 +142,8 @@ class LogAppender{
 friend class Logger;
 public:
   typedef std::shared_ptr<LogAppender> ptr;
+  typedef Mutex MutexType;
+
   virtual ~LogAppender(){}
   virtual void log(std::shared_ptr<Logger> logger,LogLevel::Level level,LogEvent::ptr event) = 0;
   void setFormatter(LogFormatter::ptr val){ m_formatter = val;}
@@ -151,6 +154,7 @@ protected:
   LogLevel::Level m_level = LogLevel::DEBUG;
   LogFormatter::ptr m_formatter;
   bool m_hasFormatter = false;
+  MutexType m_mutex;
 };
 
 
@@ -158,6 +162,7 @@ protected:
 class Logger: public std::enable_shared_from_this<Logger>{
 friend class LoggerManager;
 public:
+  typedef Mutex MutexType;
   typedef std::shared_ptr<Logger> ptr;
   Logger(const std::string name = "root");
   void log(LogLevel::Level level,LogEvent::ptr event);
@@ -184,6 +189,7 @@ private:
   std::list<LogAppender::ptr> m_appenders; //appender集合
   LogFormatter::ptr m_formatter;           //日志格式器
   Logger::ptr m_root;                      //主日志器
+  MutexType m_mutex; 
 };
 
 // 输出到控制台appender
@@ -211,6 +217,7 @@ private:
 
 class LoggerManager{
 public:
+  typedef Mutex MutexType;
   LoggerManager();
   Logger::ptr getLogger(const std::string& name);
   void init();
@@ -220,6 +227,7 @@ public:
 private:
   std::map<std::string,Logger::ptr> m_loggers;  //日志器容器
   Logger::ptr m_root;                           //主日志器
+  MutexType m_mutex;
 };
 
 //日志管理器单例模式

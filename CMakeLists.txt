@@ -10,17 +10,28 @@ set(LIB_SRC
   megalo/log.cc
   megalo/util.cc
   megalo/config.cc
+  megalo/thread.cc
+  )
+
+set(LIB_LIB
+  megalo
+  yaml-cpp
+  pthread
   )
 
 add_library(megalo SHARED ${LIB_SRC})
 
 add_executable(test tests/test.cc)
 add_dependencies(test megalo)
-target_link_libraries(test megalo yaml-cpp)
+target_link_libraries(test ${LIB_LIB})
 
 add_executable(test_config tests/test_config.cc)
 add_dependencies(test_config megalo)
-target_link_libraries(test_config megalo yaml-cpp)
+target_link_libraries(test_config ${LIB_LIB})
+
+add_executable(test_thread tests/test_thread.cc)
+add_dependencies(test_thread megalo)
+target_link_libraries(test_thread ${LIB_LIB})
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)

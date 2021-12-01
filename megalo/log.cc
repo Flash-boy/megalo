@@ -238,6 +238,7 @@ void Logger::delLogAppender(LogAppender::ptr appender){
 void Logger::log(LogLevel::Level level,LogEvent::ptr event){
   if(level >= m_level){
     MutexType::Lock lock(m_mutex);
+
     for(auto& i:m_appenders){
       i->log(shared_from_this(),level,event);
     }
@@ -338,6 +339,12 @@ FileLogAppender::FileLogAppender(const std::string& filename)
 
 void FileLogAppender::log(std::shared_ptr<Logger> logger,LogLevel::Level level,LogEvent::ptr event){
   if(level >= m_level){
+    uint64_t now = event->getTime();
+    if(now >= (m_lastTime + 3)){
+      reopen();
+      m_lastTime = now;
+    }
+
     MutexType::Lock lock(m_mutex);
     m_filestream << m_formatter->format(logger,level,event);
   }

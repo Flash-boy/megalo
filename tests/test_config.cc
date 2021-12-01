@@ -12,8 +12,7 @@
 #include <yaml-cpp/yaml.h>
 
 #if 0
-megalo::ConfigVar<int>::ptr g_config_int_value = 
-  megalo::Config::Lookup("system.port",(int)8080,"system port");
+megalo::ConfigVar<int>::ptr g_config_int_value = megalo::Config::Lookup("system.port",(int)8080,"system port");
 
 //megalo::ConfigVar<float>::ptr g_config_xint_value = 
 //  megalo::Config::Lookup("system.port",(float)8080,"system port");
@@ -224,5 +223,11 @@ int main(){
   //test_config();
   //test_class();
   test_log();
+  megalo::Config::Visit([](megalo::ConfigVarBase::ptr val){
+        MEGALO_LOG_INFO(MEGALO_LOG_ROOT()) << "name= " << val->getName() 
+                                           << " description= " << val->getDescription() 
+                                           << " typename= " << val->getTypeName() 
+                                           << " value= " <<val->toString();
+      });
   return 0;
 }

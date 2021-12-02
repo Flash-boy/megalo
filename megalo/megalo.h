@@ -1,10 +1,12 @@
 #ifndef MEGALO_MEGALO_H_
 #define MEGALO_MEGALO_H_
 
-#include "log.h"
 #include "config.h"
-#include "util.h"
+#include "log.h"
+#include "macro.h"
 #include "singleton.h"
 #include "thread.h"
+#include "util.h"
+#include "fiber.h"
 
 #endif

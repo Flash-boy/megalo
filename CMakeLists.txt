@@ -7,10 +7,11 @@ set(CMAKE_CXX_FLAGS "$ENV{CXXFLAGS} -rdynamic -O0 -g -std=c++11 -Wall -Wno-unuse
 link_directories(/usr/local/lib)
 
 set(LIB_SRC
-  megalo/log.cc
-  megalo/util.cc
   megalo/config.cc
+  megalo/fiber.cc
+  megalo/log.cc
   megalo/thread.cc
+  megalo/util.cc
   )
 
 set(LIB_LIB
@@ -32,6 +33,14 @@ target_link_libraries(test_config ${LIB_LIB})
 add_executable(test_thread tests/test_thread.cc)
 add_dependencies(test_thread megalo)
 target_link_libraries(test_thread ${LIB_LIB})
+
+add_executable(test_util tests/test_util.cc)
+add_dependencies(test_util megalo)
+target_link_libraries(test_util ${LIB_LIB})
+
+add_executable(test_fiber tests/test_fiber.cc)
+add_dependencies(test_fiber megalo)
+target_link_libraries(test_fiber ${LIB_LIB})
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)

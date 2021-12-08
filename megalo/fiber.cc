@@ -3,6 +3,7 @@
 #include "fiber.h"
 #include "macro.h"
 #include "config.h"
+#include "scheduler.h"
 
 namespace megalo{
 
@@ -37,10 +38,10 @@ Fiber::Fiber(){
     MEGALO_ASSERT2(false, "getcontext");
   }
   ++s_fiber_count;
-  MEGALO_LOG_DEBUG(g_logger) << "Fiber::Fiber id=" << m_id;
+  MEGALO_LOG_DEBUG(g_logger) << "Fiber::Fiber main";
 }
 
-Fiber::Fiber(std::function<void()> cb, size_t stack_size)
+Fiber::Fiber(std::function<void()> cb, size_t stack_size, bool use_caller)
   :m_id(++s_fiber_id)
   ,m_cb(cb){
     ++s_fiber_count;
@@ -54,7 +55,11 @@ Fiber::Fiber(std::function<void()> cb, size_t stack_size)
     m_ctx.uc_stack.ss_size = m_stacksize;
     m_ctx.uc_stack.ss_sp = m_stack;
 
-    makecontext(&m_ctx, &Fiber::MainFunc, 0); 
+    if(!use_caller){
+       makecontext(&m_ctx, &Fiber::MainFunc, 0); 
+    }else{
+       makecontext(&m_ctx, &Fiber::CalllerMainFunc, 0); 
+    }
     MEGALO_LOG_DEBUG(g_logger) << "Fiber::Fiber id=" << m_id;
 }
 
@@ -94,9 +99,7 @@ void Fiber::reset(std::function<void()> cb){
   makecontext(&m_ctx, &Fiber::MainFunc, 0); 
   m_state = INIT;
 }
-
-// 切换到当前协程
-void Fiber::swapIn(){
+void Fiber::call(){
   SetThis(this);
   MEGALO_ASSERT(m_state != EXEC);
   m_state = EXEC;
@@ -104,10 +107,26 @@ void Fiber::swapIn(){
       MEGALO_ASSERT2(false, "swapcontext");
   }
 }
-// 切换到后台执行
-void Fiber::swapOut(){
+void Fiber::back(){
   SetThis(t_threadFiber.get());
   if(swapcontext(&m_ctx, &t_threadFiber->m_ctx)){
+      MEGALO_ASSERT2(false, "swapcontext");
+  }
+}
+
+// 切换到当前协程
+void Fiber::swapIn(){
+  SetThis(this);
+  MEGALO_ASSERT(m_state != EXEC);
+  m_state = EXEC;
+  if(swapcontext(&Scheduler::GetMainFiber()->m_ctx, &m_ctx)){
+      MEGALO_ASSERT2(false, "swapcontext");
+  }
+}
+// 切换到后台执行
+void Fiber::swapOut(){
+  SetThis(Scheduler::GetMainFiber());
+  if(swapcontext(&m_ctx, &Scheduler::GetMainFiber()->m_ctx)){
       MEGALO_ASSERT2(false, "swapcontext");
   }
 }
@@ -138,12 +157,14 @@ void Fiber::SetThis(Fiber* f){
 // 协程切换到后台,并设置为READY状态
 void Fiber::YieldToReady(){
   Fiber::ptr cur = GetThis();  
+  MEGALO_ASSERT(cur->m_state == Fiber::EXEC);
   cur->m_state = READY;
   cur->swapOut();
 }
 // 协程切换到后台,并设置为HOLD状态
 void Fiber::YieldToHold(){
   Fiber::ptr cur = GetThis();
+  MEGALO_ASSERT(cur->m_state == Fiber::EXEC);
   cur->m_state = HOLD;
   cur->swapOut();
 }
@@ -173,7 +194,30 @@ void Fiber::MainFunc(){
   cur.reset();
   raw_ptr->swapOut();
 
-  MEGALO_ASSERT2(false, "never reach");
+  MEGALO_ASSERT2(false, "never reach fiber_id=" + std::to_string(raw_ptr->getId()));
 }
 
+void Fiber::CalllerMainFunc(){
+  Fiber::ptr cur = GetThis();      
+  MEGALO_ASSERT(cur);
+  try{
+    cur->m_cb();
+    cur->m_cb = nullptr;
+    cur->m_state = TERM;
+  }catch(std::exception& ex){
+    cur->m_state = EXCEPT;
+    MEGALO_LOG_ERROR(g_logger) << "Fiber Except: " << ex.what();
+  }catch(...){
+    cur->m_state = EXCEPT;
+    MEGALO_LOG_ERROR(g_logger) << "Fiber Except";
+  }
+  
+  // 切换回主协程
+  // 关键点：由于cur导致该协程计数加1,切换回主协程，要手动释放cur
+  auto raw_ptr = cur.get();
+  cur.reset();
+  raw_ptr->back();
+
+  MEGALO_ASSERT2(false, "never reach fiber_id=" + std::to_string(raw_ptr->getId()));
+}
 }

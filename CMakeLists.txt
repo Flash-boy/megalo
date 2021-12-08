@@ -12,6 +12,7 @@ set(LIB_SRC
   megalo/log.cc
   megalo/thread.cc
   megalo/util.cc
+  megalo/scheduler.cc
   )
 
 set(LIB_LIB
@@ -41,6 +42,10 @@ target_link_libraries(test_util ${LIB_LIB})
 add_executable(test_fiber tests/test_fiber.cc)
 add_dependencies(test_fiber megalo)
 target_link_libraries(test_fiber ${LIB_LIB})
+
+add_executable(test_scheduler tests/test_scheduler.cc)
+add_dependencies(test_scheduler megalo)
+target_link_libraries(test_scheduler ${LIB_LIB})
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)

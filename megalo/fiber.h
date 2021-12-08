@@ -8,7 +8,10 @@
 
 namespace megalo{
 
+class Scheduler;
+
 class Fiber: public std::enable_shared_from_this<Fiber>{
+friend class Scheduler;
 public:
   typedef std::shared_ptr<Fiber> ptr;
 
@@ -23,7 +26,7 @@ public:
 private:
   Fiber();
 public:
-  Fiber(std::function<void()> cb, size_t stack_size = 0);
+  Fiber(std::function<void()> cb, size_t stack_size = 0, bool use_caller = false);
   ~Fiber();
   // 重置协程函数，并重置状态
   // INIT, TERM
@@ -32,8 +35,13 @@ public:
   void swapIn();
   // 切换到后台执行
   void swapOut();
+  // 将当前线程切换到执行状态，执行的为当前线程的主协程
+  void call();
+  // 将当前线程切换到后台，执行的为该协程
+  void back();
 
   uint64_t getId() const {return m_id;}
+  State getState() const {return m_state;}
 public:
   // 返回当前执行点协程
   static Fiber::ptr GetThis();
@@ -45,8 +53,11 @@ public:
   static void YieldToHold();
   // 总协程数
   static uint64_t TotalFibers();
-  // 协程函数
+  // 协程执行函数，执行完返回到调度器主协程序
   static void MainFunc();
+  // 协程执行函数，执行完返回到线程调度协程
+  static void CalllerMainFunc();
+
   // 获取FiberId
   static uint64_t GetFiberId();
 private:

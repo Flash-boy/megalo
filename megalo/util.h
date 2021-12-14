@@ -24,6 +24,10 @@ void Backtrace(std::vector<std::string>& bt, int size = 64, int skip = 1);
 // 获取当前调用栈帧字符串信息
 std::string BacktraceToString(int size = 64, int skip = 2, const std::string& prefix = "");
 
+// 获取当前时间 ms
+uint64_t GetCurrentMS();
+// 获取当前时间 us
+uint64_t GetCurrentUS();
 
 }
 #endif

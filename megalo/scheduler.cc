@@ -190,6 +190,7 @@ void Scheduler::run(){
         cb_fiber->reset(ft.cb);
       }else{
         cb_fiber.reset(new Fiber(ft.cb));
+        
       }
 
       ft.reset();
@@ -224,4 +225,5 @@ void Scheduler::run(){
     }
   }
 }
+
 }

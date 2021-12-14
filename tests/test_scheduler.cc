@@ -20,7 +20,7 @@ int main(int argc, char** argv){
   sc.start();
   sleep(2);
   MEGALO_LOG_INFO(g_logger) << "scheduler";
-  sc.scheduler(&test_fiber);
+  //sc.scheduler(&test_fiber);
   sc.stop();
   MEGALO_LOG_INFO(g_logger) << "over";
   return 0;

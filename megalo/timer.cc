@@ -27,8 +27,8 @@ bool Timer::Comparator::operator()(const Timer::ptr& lhs, const Timer::ptr& rhs)
 Timer::Timer(uint64_t ms, std::function<void()> cb, 
         bool recurring, TimerManager* manager)
   :m_recurring(recurring)
-  ,m_cb(cb)
   ,m_ms(ms)
+  ,m_cb(cb)
   ,m_manager(manager){
     m_next = megalo::GetCurrentMS() + ms;
 }

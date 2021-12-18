@@ -33,9 +33,9 @@ void IOManager::FdContext::triggerEvent(IOManager::Event event){
   events = (Event)(events & ~event);
   EventContext& ctx = getContext(event);
   if(ctx.cb){
-    ctx.scheduler->scheduler(&ctx.cb);
+    ctx.scheduler->schedule(&ctx.cb);
   }else{
-    ctx.scheduler->scheduler(&ctx.fiber);
+    ctx.scheduler->schedule(&ctx.fiber);
   }
   ctx.scheduler = nullptr;
 }
@@ -144,7 +144,7 @@ bool IOManager::delEvent(int fd, Event event){
   FdContext* fd_ctx = m_fdContexts[fd];
   lock.unlock();
 
-  FdContext::MutexType lock2(fd_ctx->mutex);
+  FdContext::MutexType::Lock lock2(fd_ctx->mutex);
   if(!(fd_ctx->events & event)){
     return false;
   }
@@ -178,7 +178,7 @@ bool IOManager::cancelEvent(int fd, Event event){
   FdContext* fd_ctx = m_fdContexts[fd];
   lock.unlock();
 
-  FdContext::MutexType lock2(fd_ctx->mutex);
+  FdContext::MutexType::Lock lock2(fd_ctx->mutex);
   if(!(fd_ctx->events & event)){
     return false;
   }
@@ -209,7 +209,7 @@ bool IOManager::cancelAll(int fd){
   FdContext* fd_ctx = m_fdContexts[fd];
   lock.unlock();
 
-  FdContext::MutexType lock2(fd_ctx->mutex);
+  FdContext::MutexType::Lock lock2(fd_ctx->mutex);
   if(!fd_ctx->events){
     return false;
   }
@@ -298,7 +298,7 @@ void IOManager::idle(){
     std::vector<std::function<void()> > cbs;
     listExpiredCb(cbs);
     if(!cbs.empty()){
-      scheduler(cbs.begin(), cbs.end());
+      schedule(cbs.begin(), cbs.end());
       cbs.clear();
     }
 

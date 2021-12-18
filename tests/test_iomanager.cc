@@ -40,7 +40,7 @@ void test_fiber(){
 
 void test1(){
   megalo::IOManager iom(2, false);
-  iom.scheduler(&test_fiber);
+  iom.schedule(&test_fiber);
 }
 
 megalo::Timer::ptr s_timer;

@@ -9,6 +9,8 @@ link_directories(/usr/local/lib)
 set(LIB_SRC
   megalo/config.cc
   megalo/fiber.cc
+  megalo/fd_manager.cc
+  megalo/hook.cc
   megalo/iomanager.cc
   megalo/log.cc
   megalo/scheduler.cc
@@ -21,6 +23,7 @@ set(LIB_LIB
   megalo
   yaml-cpp
   pthread
+  dl
   )
 
 add_library(megalo SHARED ${LIB_SRC})
@@ -52,6 +55,10 @@ target_link_libraries(test_scheduler ${LIB_LIB})
 add_executable(test_iomanager tests/test_iomanager.cc)
 add_dependencies(test_iomanager megalo)
 target_link_libraries(test_iomanager ${LIB_LIB})
+
+add_executable(test_hook tests/test_hook.cc)
+add_dependencies(test_hook megalo)
+target_link_libraries(test_hook ${LIB_LIB})
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)

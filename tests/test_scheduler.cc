@@ -9,7 +9,7 @@ void test_fiber(){
 
   sleep(1);
   if(--s_count >= 0){
-    megalo::Scheduler::GetThis()->scheduler(&test_fiber, megalo::GetThreadId());
+    megalo::Scheduler::GetThis()->schedule(&test_fiber, megalo::GetThreadId());
   }
 }
 

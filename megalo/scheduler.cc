@@ -3,6 +3,7 @@
 #include "macro.h"
 #include "thread.h"
 #include "util.h"
+#include "hook.h"
 #include <string>
 
 namespace megalo{
@@ -130,6 +131,7 @@ void Scheduler::setThis(){
 }
 void Scheduler::run(){
   MEGALO_LOG_DEBUG(g_logger) << m_name << " run";
+  set_hook_enable(true);
   setThis();
   if(megalo::GetThreadId() != m_rootThread){
     t_scheduler_fiber = Fiber::GetThis().get();
@@ -179,7 +181,7 @@ void Scheduler::run(){
       --m_activeThreadCount;
 
       if(ft.fiber->getState() == Fiber::READY){
-        scheduler(ft.fiber);
+        schedule(ft.fiber);
       }else if(ft.fiber->getState() != Fiber::TERM
                 && ft.fiber->getState() != Fiber::EXCEPT){
         ft.fiber->m_state = Fiber::HOLD;
@@ -197,7 +199,7 @@ void Scheduler::run(){
       cb_fiber->swapIn();
       --m_activeThreadCount;
       if(cb_fiber->getState() == Fiber::READY){
-        scheduler(cb_fiber);
+        schedule(cb_fiber);
       }else if(cb_fiber->getState() == Fiber::TERM
               || cb_fiber->getState() == Fiber::EXCEPT) {
         cb_fiber->reset(nullptr);

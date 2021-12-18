@@ -25,11 +25,11 @@ public: typedef std::shared_ptr<Scheduler> ptr; typedef Mutex MutexType;
 
 public:
   template<class FiberOrCb>
-  void scheduler(FiberOrCb fc, int thread = -1){
+  void schedule(FiberOrCb fc, int thread = -1){
     bool need_tickle = false;
     {
-      MutexType lock(m_mutex);
-      need_tickle = schedulerNoLock(fc, thread);
+      MutexType::Lock lock(m_mutex);
+      need_tickle = scheduleNoLock(fc, thread);
     }
 
     if(need_tickle){
@@ -37,12 +37,12 @@ public:
     }
   }
   template<class InputIterator>
-  void scheduler(InputIterator begin, InputIterator end, int thread = -1){
+  void schedule(InputIterator begin, InputIterator end, int thread = -1){
     bool need_tickle = false;
     {
-      MutexType lock(m_mutex);
+      MutexType::Lock lock(m_mutex);
       while(begin != end){
-        need_tickle = schedulerNoLock(&*begin, thread) || need_tickle;
+        need_tickle = scheduleNoLock(&*begin, thread) || need_tickle;
         ++begin;
       }
     }
@@ -62,7 +62,7 @@ bool hasIdleThread() {return m_idleThreadCount > 0;}
 
 private:
   template<class FiberOrCb>
-  bool schedulerNoLock(FiberOrCb fc, int thread){
+  bool scheduleNoLock(FiberOrCb fc, int thread){
     bool need_tickle = m_fibers.empty();
     FiberAndThread ft(fc, thread);
     if(ft.fiber || ft.cb){

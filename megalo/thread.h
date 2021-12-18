@@ -7,11 +7,12 @@
 #include <functional>
 #include <string>
 #include <atomic>
+#include "noncopyable.h"
 
 namespace megalo{
 
 //信号量
-class Semaphore{
+class Semaphore : Noncopyable{
 public:
   Semaphore(uint32_t count = 0);
   ~Semaphore();
@@ -110,7 +111,7 @@ private:
 };
 
 // 互斥量
-class Mutex{
+class Mutex : Noncopyable{
 public:
   typedef ScopedLockImpl<Mutex> Lock;
   Mutex(){
@@ -130,7 +131,7 @@ private:
 };
 
 // 空锁，用于调试
-class NullMutex{
+class NullMutex : Noncopyable{
 public:
   typedef ScopedLockImpl<NullMutex> Lock;
   NullMutex(){
@@ -147,7 +148,7 @@ private:
 
 
 // 读写互斥量
-class RWMutex{
+class RWMutex : Noncopyable{
 public:
   typedef ReadScopedLockImpl<RWMutex> ReadLock;
   typedef WriteScopedLockImpl<RWMutex> WriteLock;
@@ -173,7 +174,7 @@ private:
 };
 
 // 空读写互斥量,调试用
-class NullRWMutex{
+class NullRWMutex : Noncopyable{
 public:
   typedef ReadScopedLockImpl<NullRWMutex> ReadLock;
   typedef WriteScopedLockImpl<NullRWMutex> WriteLock;
@@ -192,7 +193,7 @@ private:
 };
 
 // 自旋锁
-class Spinlock{
+class Spinlock : Noncopyable{
 public:
   typedef ScopedLockImpl<Spinlock> Lock;
   Spinlock(){
@@ -213,7 +214,7 @@ private:
 };
 
 // CASLock
-class CASLock{
+class CASLock : Noncopyable{
 public:
   typedef ScopedLockImpl<CASLock> Lock;
   CASLock(){

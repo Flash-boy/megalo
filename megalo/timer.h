@@ -30,7 +30,7 @@ private:
   uint64_t m_ms = 0;
   // 执行时间
   uint64_t m_next = 0;
-  std::function<void()> m_cb;
+  std::function<void()> m_cb = nullptr;
   TimerManager* m_manager = nullptr;
 
 private:

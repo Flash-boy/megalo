@@ -1,6 +1,7 @@
 #ifndef __MEGALO_HOOK_H_
 #define __MEGALO_HOOK_H_
 #include <unistd.h>
+#include <stdint.h>
 #include <time.h>
 #include <fcntl.h>
 #include <sys/types.h>   
@@ -84,6 +85,8 @@ extern "C"{
   
   typedef int (*setsockopt_fun)(int sockfd, int level, int optname, const void *optval, socklen_t optlen);
   extern setsockopt_fun setsockopt_f;
+
+int connect_with_timeout(int fd, const struct sockaddr* addr, socklen_t addrlen, uint64_t timeout_ms);
 
 }
 

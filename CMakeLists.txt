@@ -15,6 +15,7 @@ set(LIB_SRC
   megalo/iomanager.cc
   megalo/log.cc
   megalo/scheduler.cc
+  megalo/socket.cc
   megalo/thread.cc
   megalo/timer.cc
   megalo/util.cc
@@ -64,6 +65,10 @@ target_link_libraries(test_hook ${LIB_LIB})
 add_executable(test_address tests/test_address.cc)
 add_dependencies(test_address megalo)
 target_link_libraries(test_address ${LIB_LIB})
+
+add_executable(test_socket tests/test_socket.cc)
+add_dependencies(test_socket megalo)
+target_link_libraries(test_socket ${LIB_LIB})
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)

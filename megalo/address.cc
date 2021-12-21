@@ -111,7 +111,7 @@ Address::ptr Address::LookupAny(const std::string& host,
 }
 
 
-std::shared_ptr<IPAddress> Address::LookupAnyIpAdd(const std::string& host,
+std::shared_ptr<IPAddress> Address::LookupAnyIpAddress(const std::string& host,
       int family, int type, int protocol){
   std::vector<Address::ptr> result;
   if(Lookup(result, host, family, type, protocol)){

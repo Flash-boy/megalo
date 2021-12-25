@@ -8,6 +8,7 @@ link_directories(/usr/local/lib)
 
 set(LIB_SRC
   megalo/address.cc
+  megalo/bytearray.cc
   megalo/config.cc
   megalo/fiber.cc
   megalo/fd_manager.cc
@@ -69,6 +70,10 @@ target_link_libraries(test_address ${LIB_LIB})
 add_executable(test_socket tests/test_socket.cc)
 add_dependencies(test_socket megalo)
 target_link_libraries(test_socket ${LIB_LIB})
+
+add_executable(test_bytearray tests/test_bytearray.cc)
+add_dependencies(test_bytearray megalo)
+target_link_libraries(test_bytearray ${LIB_LIB})
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)

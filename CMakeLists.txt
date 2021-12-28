@@ -14,6 +14,9 @@ set(LIB_SRC
   megalo/fd_manager.cc
   megalo/hook.cc
   megalo/http/http.cc
+  megalo/http/http11_parser.rl.cc
+  megalo/http/httpclient_parser.rl.cc
+  megalo/http/http_parser.cc
   megalo/iomanager.cc
   megalo/log.cc
   megalo/scheduler.cc
@@ -79,6 +82,10 @@ target_link_libraries(test_bytearray ${LIB_LIB})
 add_executable(test_http tests/test_http.cc)
 add_dependencies(test_http megalo)
 target_link_libraries(test_http ${LIB_LIB})
+
+add_executable(test_http_parser tests/test_http_parser.cc)
+add_dependencies(test_http_parser megalo)
+target_link_libraries(test_http_parser ${LIB_LIB})
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)

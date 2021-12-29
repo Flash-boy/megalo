@@ -74,6 +74,7 @@ bool Address::Lookup(std::vector<Address::ptr>& result, const std::string& host,
     if(service){
       if(!memchr(service + 1, ':', host.c_str() + host.size() - service - 1)){
         node = host.substr(0, service - host.c_str());
+        ++service;
       }
     }
   }

@@ -2,6 +2,7 @@
 #define __MEGALO_SOCKET_H_
 
 #include <memory> 
+#include <ostream>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include "noncopyable.h"
@@ -376,6 +377,7 @@ protected:
   Address::ptr m_remoteAddress;         
 };
 
+std::ostream& operator<<(std::ostream& os, const Socket& sock);
 }
 
 #endif

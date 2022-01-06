@@ -17,10 +17,15 @@ set(LIB_SRC
   megalo/http/http11_parser.rl.cc
   megalo/http/httpclient_parser.rl.cc
   megalo/http/http_parser.cc
+  megalo/http/http_session.cc
+  megalo/http/http_server.cc
+  megalo/http/servlet.cc
   megalo/iomanager.cc
   megalo/log.cc
   megalo/scheduler.cc
   megalo/socket.cc
+  megalo/stream.cc
+  megalo/socket_stream.cc
   megalo/tcp_server.cc
   megalo/thread.cc
   megalo/timer.cc
@@ -95,6 +100,10 @@ target_link_libraries(test_tcp_server ${LIB_LIB})
 add_executable(echo_server examples/echo_server.cc)
 add_dependencies(echo_server megalo)
 target_link_libraries(echo_server ${LIB_LIB})
+
+add_executable(test_http_server tests/test_http_server.cc)
+add_dependencies(test_http_server megalo)
+target_link_libraries(test_http_server ${LIB_LIB})
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
